@@ -16,7 +16,7 @@ const run = [...items, ...items];
   <p class="sr-only">{items.join('. ')}.</p>
 
   <div class="track-mask min-w-0 flex-1" aria-hidden="true">
-    <div class="track">
+    <div class="track allow-motion">
       {[0, 1].map(() => (
         <ul class="track-half">
           {run.map((item) => (
@@ -53,7 +53,9 @@ const run = [...items, ...items];
   .track {
     display: flex;
     width: max-content;
-    animation: marquee 48s linear infinite;
+    /* --dur is set from the measured width so every screen scrolls at the
+       same calm reading speed (see script); 60s is the no-JS fallback. */
+    animation: marquee var(--dur, 60s) linear infinite;
   }
   .track-half {
     display: flex;
@@ -75,8 +77,11 @@ const run = [...items, ...items];
     font-size: clamp(2.4rem, 7.2vw, 7.5rem);
     background: var(--color-sage);
   }
-  .marquee:hover .track,
-  .marquee:focus-within .track,
+  /* Hover-pause only where there's a real mouse; on touch screens a tap
+     would otherwise leave it stuck. The pause button works everywhere. */
+  @media (hover: hover) and (pointer: fine) {
+    .track-mask:hover .track { animation-play-state: paused; }
+  }
   .marquee.is-paused .track {
     animation-play-state: paused;
   }
@@ -87,14 +92,25 @@ const run = [...items, ...items];
     to { transform: translateX(-50%); }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .track { animation: none; transform: translateX(-4%); }
-    .marquee-toggle { display: none; }
-  }
+
 </style>
 
 <script>
+  // Reading speed in px/second. Slower with reduced motion turned on, but it
+  // still moves so every word can be read (the pause button stops it).
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SPEED = reduce ? 22 : 40;
+
   document.querySelectorAll<HTMLElement>('.marquee').forEach((el) => {
+    const half = el.querySelector<HTMLElement>('.track-half');
+    const track = el.querySelector<HTMLElement>('.track');
+    const setSpeed = () => {
+      if (half && track) track.style.setProperty('--dur', `${(half.offsetWidth / SPEED).toFixed(1)}s`);
+    };
+    setSpeed();
+    window.addEventListener('resize', setSpeed, { passive: true });
+    document.fonts?.ready.then(setSpeed);
+
     const btn = el.querySelector<HTMLButtonElement>('.marquee-toggle');
     btn?.addEventListener('click', () => {
       const paused = el.classList.toggle('is-paused');

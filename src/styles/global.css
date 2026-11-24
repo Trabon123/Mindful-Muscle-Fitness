@@ -256,7 +256,7 @@ html.lenis body { height: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *:not(.allow-fade),
+  *:not(.allow-fade):not(.allow-motion),
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
