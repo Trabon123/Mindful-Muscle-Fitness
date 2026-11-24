@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "og": "node scripts/og.mjs",
-    "check": "astro check"
+    "check": "astro check",
+    "single": "node scripts/single-file.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.12",

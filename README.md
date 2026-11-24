@@ -35,6 +35,17 @@ npm run preview
 
 `npm run build` type-checks (`astro check`) and outputs a fully static site to `dist/`.
 
+## Share a preview without deploying
+
+```bash
+npm run single
+```
+
+This writes `preview/mindful-muscle-fitness.html`: one self-contained file
+(about 520 KB) with every font, script and image inlined. Email or AirDrop it;
+it opens by double-clicking, works offline, and isn't hosted anywhere. Only the
+optional "Load map" button needs internet. Re-run it after any change.
+
 ## Deploy on Vercel
 
 1. Push this folder to a GitHub repo.
