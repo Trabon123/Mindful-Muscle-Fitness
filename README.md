@@ -59,7 +59,7 @@ All copy lives in `src/data/*`. Components only render.
 |---|---|
 | `src/data/site.ts` | Business facts (address, phone, hours, rating), SEO, hero, marquee, sticky bar, **booking link** |
 | `src/data/sections.ts` | Every section below the hero, including the **semester countdown date** |
-| `src/data/testimonials.ts` | Reviews (placeholders until real Google reviews are approved) |
+| `src/data/testimonials.ts` | Google reviews (verbatim) |
 | `src/data/images.ts` | Image shot list (see also `public/images/README.md`) |
 
 **Booking:** set `business.bookingUrl` in `src/data/site.ts`. Every "Book"
@@ -80,21 +80,21 @@ src/
   components/
     BreathingHero.astro     Split MIND/MUSCLE headline, 16s breathing orb (CSS only)
     Marquee.astro           "Between classes" strip (pausable)
-    MindMuscleMorph.astro   Sticky scroll: brain → muscle fibre → barbell (MorphSVG)
+    MindMuscleMorph.astro   Back/next steps: brain → muscle fibre → barbell (MorphSVG)
     morph-shapes.ts         Hand-drawn SVG paths for the morph
     Manifesto.astro         Mission, keywords light up on scroll
     AppShowcase.astro       CSS-3D phone, cursor tilt, 4 designed screens, tabs
-    CoachSpotlight.astro    Caleb + team slots
-    PartnerCard.astro       Buff Brain Gym
+    CoachSpotlight.astro    Caleb (photo + bio)
+    PartnerCard.astro       Buff Brain Gym (text-only card)
     Testimonials.astro      Slow-drift carousel + 5.0★ badge
     SemesterCountdown.astro "New semester. New you."
-    Footer.astro            Click-to-load map, details, breathing "Breathe."
+    Footer.astro            Click-to-load map, details, breathing hairline sign-off
     StickyCTA.astro         Mobile Book / Call bar
     SmartImage.astro        Single image pipeline + designed placeholders
     Icon.astro              Custom hairline icon set (no icon fonts / emoji)
   data/                     All content (see above)
   layouts/Base.astro        <head>: SEO, OG, JSON-LD (HealthClub + ExerciseGym), fonts
-  scripts/motion.ts         The one JS island: Lenis, ScrollTrigger, morph, tilt, carousel
+  scripts/motion.ts         The one JS island: Lenis, ScrollTrigger, morph steps, tilt, carousel
   styles/global.css         Design tokens, breath clock keyframes, utilities
 public/
   fonts/                    Self-hosted, subset fonts
@@ -119,7 +119,7 @@ Fraunces is shipped as two static, Latin-subset instances (19 KB italic,
 face) is inlined in the HTML.
 
 **Motion:** one 16s breath clock (`--breath` in `global.css`) drives the hero
-orb, phase label, box tracer, section glows and the footer "Breathe." Every
+orb, section glows and the footer's breathing hairline. Every
 ease is breath-shaped (`--ease-breath` sine in-out, `--ease-exhale` long
 settle). Seconds never tick; the countdown updates once a minute.
 
@@ -144,7 +144,7 @@ Measured on the production build (`npm run build && npm run preview`):
   checked on every pairing (sage text uses `sage-deep`), keyboard-operable
   carousel (buttons + arrow keys) and app tabs (arrow/Home/End), pause buttons
   for the breathing animation, marquee and carousel (2.2.2).
-- **`prefers-reduced-motion`:** orb and phase label stop, morph becomes a
+- **`prefers-reduced-motion`:** the orb stops, morph becomes a
   crossfade, manifesto shows fully lit, Lenis, tilt and carousel drift are off.
 - Tested at 375, 768, 1280 and 1920 px with no horizontal overflow.
 
@@ -156,8 +156,10 @@ Where the brief was open, the calmer, more premium option was chosen:
 - **Marquee** loops once every ~48s, slower than typical.
 - **Map** is a designed locator until the visitor clicks "Load map". That keeps
   Google's iframe off the critical path, which protects performance and privacy.
-- **Morph** uses CSS `position: sticky` with a scrubbed GSAP timeline rather
-  than GSAP pinning. It's smoother with Lenis and degrades to a plain list
+- **Morph** is driven by back/next buttons and the step pills, not by
+  scroll, so the page scrolls straight past it. It degrades to a plain list
   without JS.
+- **Caleb's photo** uses a gentle desaturation rather than duotone, so the
+  owner reads clearly.
 - **Orange** never appears as body text (it only reaches 3.3:1 on bone).
 - **Google badge** uses a neutral "G" mark rather than Google's logo.

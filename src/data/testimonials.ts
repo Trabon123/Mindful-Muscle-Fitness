@@ -1,29 +1,85 @@
 /**
- * ⚠️ PLACEHOLDERS ONLY. These are NOT real reviews.
+ * Google reviews, supplied by the owner. Quotes are verbatim (original
+ * spelling kept). Names are shown as they appear on Google.
  *
- * Replace each entry with a real Google review once the owner has approved it
- * for use on the site. Keep the reviewer's name exactly as it appears on Google
- * (or first name + last initial, with their permission), and set
- * `placeholder: false`.
- *
- * The component visibly labels any entry where `placeholder` is true.
+ * Add new ones to the top. Set `placeholder: true` on any entry that is not a
+ * real, approved review and the card will be visibly labelled.
  */
 export interface Testimonial {
   quote: string;
   name: string;
-  context?: string;
-  rating: 1 | 2 | 3 | 4 | 5;
   source: 'Google';
-  placeholder: boolean;
+  placeholder?: boolean;
 }
 
-const PLACEHOLDER_QUOTE = 'TODO: Paste an approved Google review here.';
-
-export const testimonials: Testimonial[] = Array.from({ length: 5 }, (_, i) => ({
-  quote: PLACEHOLDER_QUOTE,
-  name: `TODO: Reviewer ${i + 1}`,
-  context: 'Google review',
-  rating: 5,
-  source: 'Google',
-  placeholder: true,
-}));
+export const testimonials: Testimonial[] = [
+  {
+    name: 'WalrusFilms FTW',
+    quote:
+      'You can tell the owner really cares about your experience. All the staff are very well educated when it comes to fitness as well. While it is a smaller gym this feels more of an advantage then the other way around. I really felt like they made my health and goals their priority. Definitely reccomend!',
+    source: 'Google',
+  },
+  {
+    name: 'Andrew Willis',
+    quote:
+      'We’ll trained staff. Great private gym definitely recommend if you are starting out. Caleb is the absolute man he knows everything when it comes to physical fitness. Give them a try and you won’t regret.',
+    source: 'Google',
+  },
+  {
+    name: 'Troy Mackey',
+    quote:
+      'Caleb is an outstanding trainer. Not only will he work you to the bone but, his dietary plans can help you get and stay in shape. The gym is conveniently located on this hill making a mid-day workout a breeze to get to in between classes.',
+    source: 'Google',
+  },
+  {
+    name: 'jake hoodack',
+    quote:
+      'Trainers, such as Caleb Saks, really pushed me to meet my fitness goals. Their whole staff really made working out enjoyable and meaningful. Overall amazing experience.',
+    source: 'Google',
+  },
+  {
+    name: 'Zach Columbus',
+    quote: 'Trainers are very knowledgeable and they have a nice variety of equipment in great shape!',
+    source: 'Google',
+  },
+  {
+    name: 'Evan Kelly',
+    quote: 'The owner, Caleb, is incredibly knowledgeable and passionate about what he does. Could not recommend more.',
+    source: 'Google',
+  },
+  {
+    name: 'Henry Babbie',
+    quote: 'Great trainers who care about your goals as much as you do.',
+    source: 'Google',
+  },
+  {
+    name: 'Frank Diaz',
+    quote: 'Great experience, high level of professionalism and really nice equipment.',
+    source: 'Google',
+  },
+  {
+    name: 'Bradley Gottlieb',
+    quote: 'Great people. They make working out a good time',
+    source: 'Google',
+  },
+  {
+    name: 'Paul Villarreal',
+    quote: 'Super nice vibe here and the staff knows what they are talking about.',
+    source: 'Google',
+  },
+  {
+    name: 'Mitch Morgan',
+    quote: 'Great equipment, even better trainers.',
+    source: 'Google',
+  },
+  {
+    name: 'Cameron LaPierre',
+    quote: 'Timely, organized, and dedicated work. Shoutout mindful muscle fitness!',
+    source: 'Google',
+  },
+  {
+    name: 'Aidan Clark',
+    quote: 'Quality facility and great equipment!',
+    source: 'Google',
+  },
+];

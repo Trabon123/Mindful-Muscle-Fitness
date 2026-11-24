@@ -1,8 +1,8 @@
 ---
 /**
- * BreathingHero: zero-JS, CSS-only hero. The orb, phase label and box tracer
- * all run on the shared 16s breath clock defined in global.css.
- * The one tiny script only handles the pause toggle (WCAG 2.2.2).
+ * BreathingHero: zero-JS, CSS-only hero. The orb runs on the shared 16s
+ * breath clock defined in global.css. The one tiny script only handles the
+ * pause toggle in the header (WCAG 2.2.2).
  */
 import Icon from './Icon.astro';
 import { business, hero, nav, bookHref, bookIsFallback } from '../data/site';
@@ -17,7 +17,17 @@ import { business, hero, nav, bookHref, bookIsFallback } from '../data/site';
       <span class="micro hidden text-[0.62rem] text-ink/70 sm:inline">Fitness</span>
       <span class="sr-only">, back to top</span>
     </a>
-    <div class="flex items-center gap-5">
+    <div class="flex items-center gap-3 sm:gap-5">
+      <button
+        type="button"
+        class="breath-toggle grid size-8 shrink-0 place-items-center rounded-full text-ink/60 shadow-[inset_0_0_0_1px_var(--hairline)] transition-colors hover:text-ink"
+        aria-pressed="false"
+        aria-label={hero.pauseLabel}
+        title={hero.pauseLabel}
+      >
+        <Icon name="pause" size={13} class="i-pause" />
+        <Icon name="play" size={13} class="i-play hidden" />
+      </button>
       <p class="micro flex items-center gap-2 text-[0.66rem] text-ink/70">
         <span class="breathe-glow relative inline-block size-1.5 rounded-full bg-sage-deep" style="--g-min:.35" aria-hidden="true"></span>
         <span class="hidden sm:inline">{nav.openLabel}</span>
@@ -43,30 +53,6 @@ import { business, hero, nav, bookHref, bookIsFallback } from '../data/site';
       <span aria-hidden="true" class="word-mind mind block">{hero.wordMind}</span>
       <span aria-hidden="true" class="word-muscle muscle block">{hero.wordMuscle}</span>
     </h1>
-        <!-- Breath indicator: sits directly under the headline -->
-        <div class="breath-ui relative mt-6 flex items-center justify-center gap-4 md:mt-8">
-          <svg class="size-9 shrink-0 text-sage-deep" viewBox="0 0 36 36" aria-hidden="true">
-            <rect x="3" y="3" width="30" height="30" rx="2" fill="none" stroke="var(--hairline)" stroke-width="1" />
-            <rect class="breath-trace" x="3" y="3" width="30" height="30" rx="2" fill="none" stroke="currentColor"
-              stroke-width="2.25" stroke-linecap="round" pathLength="100" />
-          </svg>
-          <div class="min-w-0">
-            <p class="phase-stack mind text-[1.65rem] leading-none text-ink" aria-hidden="true">
-              {hero.phases.map((p, i) => <span class="breath-phase" style={`--i:${i}`}>{p}</span>)}
-              <span class="phase-static">{hero.phases.join(' · ')}</span>
-            </p>
-            <p class="micro mt-1.5 text-[0.6rem] whitespace-nowrap text-ink/70">{hero.breathHint}</p>
-          </div>
-          <button
-            type="button"
-            class="breath-toggle grid size-10 shrink-0 place-items-center rounded-full text-ink/70 shadow-[inset_0_0_0_1px_var(--hairline)] transition-colors hover:text-ink"
-            aria-pressed="false"
-            aria-label={hero.pauseLabel}
-          >
-            <Icon name="pause" size={16} class="i-pause" />
-            <Icon name="play" size={16} class="i-play hidden" />
-          </button>
-        </div>
   </div>
 
   <!-- Base -->
@@ -190,34 +176,11 @@ import { business, hero, nav, bookHref, bookIsFallback } from '../data/site';
     border: 1px solid color-mix(in oklab, var(--color-sage-deep) 22%, transparent);
   }
 
-  /* ── Breath indicator ─────────────────────────────────── */
-  .breath-trace {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    animation: breath-trace var(--breath) linear infinite;
-  }
-  .phase-stack {
-    display: grid;
-    height: 1.15em;
-    overflow: hidden;
-  }
-  .phase-stack > span { grid-area: 1 / 1; }
-  .breath-phase {
-    opacity: 0;
-    animation: breath-phase var(--breath) var(--ease-breath) infinite;
-    /* phase i starts at i × 4s; expressed as a negative delay so all start in sync */
-    animation-delay: calc((var(--i) * 4s) - var(--breath));
-  }
-  .phase-static { display: none; }
 
   :global(.breath-paused) .breath-toggle :global(.i-pause) { display: none; }
   :global(.breath-paused) .breath-toggle :global(.i-play) { display: block; }
 
   @media (prefers-reduced-motion: reduce) {
-    .breath-phase { display: none; }
-    .breath-trace { animation: none; stroke-dashoffset: 0; }
-    .phase-static { display: block; font-size: 0.8em; }
-    .phase-stack { height: auto; }
     .breath-toggle { display: none; }
     .word-mind, .word-muscle { animation: none; }
   }

@@ -70,8 +70,6 @@ export const hero = {
   support: business.team,
   primaryCta: 'Book a Free Consult',
   secondaryCta: `Call ${business.phone.display}`,
-  phases: ['inhale', 'hold', 'exhale', 'hold'] as const,
-  breathHint: 'Box breathing · 4 · 4 · 4 · 4',
   pauseLabel: 'Pause breathing animation',
   scrollCue: 'Scroll, slowly',
 } as const;

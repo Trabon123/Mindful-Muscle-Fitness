@@ -111,11 +111,6 @@ export const coach = {
     `Opened ${business.founded}`,
     'Leads free Buff Brain Gym sessions',
   ],
-  teamTitle: 'The team',
-  teamIntro: business.team,
-  teamSlots: 3,
-  teamSlotLabel: 'Team · coming soon',
-  teamSlotTodo: 'TODO: trainer name & specialty',
 } as const;
 
 /* ── 7 · Partner ─────────────────────────────────────────── */

@@ -97,16 +97,18 @@ const { address: a } = business;
       </dl>
     </div>
 
-    <!-- Sign-off -->
-    <div class="signoff relative mt-[12vh] grid place-items-center" aria-hidden="true">
-      <span class="signoff-word mind breathe" style="--b-min:.94;--b-max:1.04">{footer.signoff}</span>
-    </div>
-    <p class="sr-only">{footer.signoff}</p>
-
-    <div class="mt-10 flex flex-col gap-3 border-t border-[var(--hairline-light)] pt-6 text-[0.8rem] text-bone/60 sm:flex-row sm:items-center sm:justify-between">
-      <p>© {year} {business.legalName}</p>
-      <p>{business.positioning}</p>
-      <a href="#top" class="link">Back to top ↑</a>
+    <!-- Bottom bar: the hairline breathes on the same 16s cycle as the hero -->
+    <div class="relative mt-[12vh] pt-6">
+      <span class="rule" aria-hidden="true"></span>
+      <span class="rule-breath" aria-hidden="true"></span>
+      <div class="flex flex-col gap-4 text-[0.8rem] text-bone/60 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {year} {business.legalName}</p>
+        <p class="flex items-center gap-2.5 text-sage">
+          <span class="dot breathe-glow" aria-hidden="true" style="--g-min:.35"></span>
+          <span class="mind text-[1.15rem] leading-none">{footer.signoff}</span>
+        </p>
+        <a href="#top" class="link">Back to top ↑</a>
+      </div>
     </div>
   </div>
 </footer>
@@ -119,12 +121,32 @@ const { address: a } = business;
   .pin { grid-area: 1 / 1; width: 0.9rem; height: 0.9rem; border-radius: 50%; background: var(--color-orange); box-shadow: 0 0 0 6px rgba(226, 87, 43, 0.18); }
   .link { background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat; transition: background-size 0.9s var(--ease-exhale); }
   .link:hover { background-size: 100% 1px; }
-  .signoff-word {
-    display: block;
-    font-size: clamp(5rem, 22vw, 22rem);
-    line-height: 1;
-    color: var(--color-sage);
-    letter-spacing: -0.04em;
+  .rule,
+  .rule-breath {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+  .rule { background: var(--hairline-light); }
+  .rule-breath {
+    background: linear-gradient(90deg, transparent, var(--color-sage) 30%, var(--color-sage) 70%, transparent);
+    transform-origin: center;
+    animation: line-breath var(--breath) infinite both;
+  }
+  :global(.breath-paused) .rule-breath { animation-play-state: paused; }
+  .dot { width: 0.4rem; height: 0.4rem; border-radius: 50%; background: var(--color-sage); }
+  /* inhale: the line opens out from the centre · hold · exhale: it draws back in · hold */
+  @keyframes line-breath {
+    0%   { transform: scaleX(0.12); opacity: 0.5; animation-timing-function: var(--ease-breath); }
+    25%  { transform: scaleX(1); opacity: 1; }
+    50%  { transform: scaleX(1); opacity: 1; animation-timing-function: var(--ease-breath); }
+    75%  { transform: scaleX(0.12); opacity: 0.5; }
+    100% { transform: scaleX(0.12); opacity: 0.5; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rule-breath { animation: none; transform: scaleX(0.4); }
   }
 </style>
 

@@ -17,7 +17,7 @@ Every image on the site goes through `<SmartImage id="…" />`. Until a real pho
 
 ## Slots (18)
 
-**On the page now:** `caleb-portrait`, `trainer-1…3`, `buff-brain-group`. **Reserved** slots are the next shots to capture.
+**On the page now:** `caleb-portrait` (supplied). **Reserved** slots are the next shots to capture.
 
 | # | Filename | Ratio | Subject | Where it's used |
 |---|---|---|---|---|
@@ -25,15 +25,15 @@ Every image on the site goes through `<SmartImage id="…" />`. Until a real pho
 | 2 | `studio-wide.jpg` | 21:9 | Wide studio shot showing racks and open floor | Reserved · Mind ⇄ Muscle |
 | 3 | `detail-barbell.jpg` | 4:5 | Close detail: knurling on a barbell, chalk, soft side light | Reserved · Mind ⇄ Muscle · Movement |
 | 4 | `detail-plates.jpg` | 1:1 | Stacked plates or dumbbell rack, graphic composition | Reserved · Spare detail |
-| 5 | `caleb-portrait.jpg` | 4:5 | Caleb Saks, editorial portrait, plain wall, looking at camera | Meet your coach |
-| 6 | `trainer-1.jpg` | 3:4 | Trainer portrait #1 (same setup as Caleb’s) | Team grid |
-| 7 | `trainer-2.jpg` | 3:4 | Trainer portrait #2 | Team grid |
-| 8 | `trainer-3.jpg` | 3:4 | Trainer portrait #3 | Team grid |
+| 5 | `caleb-portrait.jpg` | 16:9 | Caleb Saks mid-lift in the studio (supplied). A higher-resolution original (≥ 2000px wide) would sharpen it on large screens | Meet your coach |
+| 6 | `trainer-1.jpg` | 3:4 | Trainer portrait #1 (same setup as Caleb’s) | Reserved · Team grid (section removed until trainer details exist) |
+| 7 | `trainer-2.jpg` | 3:4 | Trainer portrait #2 | Reserved · Team grid (section removed until trainer details exist) |
+| 8 | `trainer-3.jpg` | 3:4 | Trainer portrait #3 | Reserved · Team grid (section removed until trainer details exist) |
 | 9 | `action-coaching.jpg` | 3:2 | 1-on-1 coaching: trainer cueing a client mid-lift (client consent required) | Reserved · Mind ⇄ Muscle · Movement |
 | 10 | `action-deadlift.jpg` | 4:5 | Strength training action: deadlift lockout, calm face, no sweat close-ups | Reserved · Spare action |
 | 11 | `meditation-session.jpg` | 3:2 | Seated meditation / breathwork at the start of a session | Reserved · Mind ⇄ Muscle · Mindset |
 | 12 | `nutrition-plan.jpg` | 4:5 | Nutrition: simple meal prep or the plan on a phone, overhead | Reserved · Mind ⇄ Muscle · Momentum |
-| 13 | `buff-brain-group.jpg` | 3:2 | Buff Brain Gym group yoga or meditation session led by Caleb | Partner card |
+| 13 | `buff-brain-group.jpg` | 3:2 | Buff Brain Gym group yoga or meditation session led by Caleb | Reserved · Partner card (photo panel removed) |
 | 14 | `hill-exterior.jpg` | 16:9 | 1044 10th St storefront / The Hill street scene at dusk | Reserved · Footer |
 | 15 | `app-pr.png` | 9:19.5 | App screenshot: PR tracker | Reserved · App showcase (would replace the designed mock screen) |
 | 16 | `app-watch.png` | 9:19.5 | App screenshot: Apple Watch heart rate & steps | Reserved · App showcase (would replace the designed mock screen) |

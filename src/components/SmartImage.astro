@@ -20,9 +20,11 @@ interface Props {
   tone?: 'sage' | 'ink' | 'bone';
   /** Override the shot list's aspect ratio, e.g. to fill a fixed box */
   ratio?: string;
+  /** Gentle desaturation for full-colour photos so they sit in the palette */
+  soft?: boolean;
 }
 
-const { id, class: className = '', sizes = '(min-width: 1024px) 50vw, 100vw', priority = false, tone = 'sage', ratio } = Astro.props;
+const { id, class: className = '', sizes = '(min-width: 1024px) 50vw, 100vw', priority = false, tone = 'sage', ratio, soft = false } = Astro.props;
 const slot = getImage(id);
 
 const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
@@ -39,7 +41,7 @@ if (asset) {
 ---
 
 <figure
-  class:list={['smart-image', `tone-${tone}`, { 'is-duotone': slot.duotone, 'is-placeholder': !asset }, className]}
+  class:list={['smart-image', `tone-${tone}`, { 'is-duotone': slot.duotone, 'is-soft': soft && !slot.duotone, 'is-placeholder': !asset }, className]}
   style={`aspect-ratio:${aspect};${blur ? `--blur:url(${blur})` : ''}`}
 >
   {
@@ -48,7 +50,7 @@ if (asset) {
         src={asset}
         alt={slot.alt}
         formats={['avif', 'webp']}
-        widths={[480, 800, 1200, 1800, 2400].filter((w) => w <= asset.width)}
+        widths={[...new Set([480, 800, 1200, 1800, 2400].filter((w) => w < asset.width).concat(asset.width))]}
         sizes={sizes}
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
@@ -95,6 +97,11 @@ if (asset) {
     transition: opacity 1.6s var(--ease-breath);
   }
   .smart-image.is-loaded :global(.smart-img) { opacity: 1; }
+
+  /* Soft: full colour, pulled gently toward the palette */
+  .is-soft :global(.smart-img) {
+    filter: saturate(0.72) contrast(1.03) sepia(0.08);
+  }
 
   /* Duotone: grayscale photo, ink in the shadows, sage in the highlights */
   .is-duotone:not(.is-placeholder) :global(.smart-img) {

@@ -3,7 +3,7 @@
  * Loaded at idle so it never competes with first paint (the hero is CSS-only).
  *
  *  - Lenis smooth scroll, driven by the GSAP ticker so ScrollTrigger stays in sync
- *  - Mind ⇄ Muscle MorphSVG scrub (crossfade under reduced motion)
+ *  - Mind ⇄ Muscle: button-driven MorphSVG steps (crossfade under reduced motion)
  *  - Manifesto keyword lighting
  *  - Scroll reveals, app tabs, phone tilt, counters/rings
  *  - Testimonial drift carousel
@@ -237,41 +237,51 @@ async function initScroll() {
     gsap.ticker.lagSmoothing(0);
   }
 
-  // Mind ⇄ Muscle
+  // Mind ⇄ Muscle: step through with buttons; the page scrolls freely past it
   const morph = $('[data-morph]');
   if (morph) {
     morph.classList.add('is-enhanced');
     if (reduce) morph.classList.add('is-crossfade');
-    const setActive = (i: number) => {
-      if (morph.dataset.active !== String(i)) morph.dataset.active = String(i);
+    const path = $('#morph-path', morph)!;
+    const beats = $$('[data-beat]', morph);
+    const shapes = $$('.layer', morph).map((l) => `#${l.id}`);
+    const steps = $$<HTMLButtonElement>('[data-go]', morph);
+    const prev = $<HTMLButtonElement>('[data-step="-1"]', morph)!;
+    const next = $<HTMLButtonElement>('[data-step="1"]', morph)!;
+    const count = $('.count', morph);
+    const total = String(beats.length).padStart(2, '0');
+    let active = -1;
+
+    const show = (i: number, animate = true) => {
+      i = Math.max(0, Math.min(beats.length - 1, i));
+      if (i === active) return;
+      active = i;
+      morph.dataset.active = String(i);
+      beats.forEach((b, j) => {
+        b.toggleAttribute('inert', j !== i);
+        b.setAttribute('aria-hidden', String(j !== i));
+      });
+      steps.forEach((s, j) => {
+        if (j === i) s.setAttribute('aria-current', 'step');
+        else s.removeAttribute('aria-current');
+      });
+      prev.disabled = i === 0;
+      next.disabled = i === beats.length - 1;
+      if (count) count.textContent = `${String(i + 1).padStart(2, '0')} / ${total}`;
+      if (animate && !reduce) {
+        gsap.to(path, {
+          morphSVG: { shape: shapes[i], shapeIndex: 'auto' },
+          duration: 1.6,
+          ease: 'sine.inOut',
+          overwrite: true,
+        });
+      }
     };
-    if (reduce) {
-      ScrollTrigger.create({
-        trigger: morph,
-        start: 'top top',
-        end: 'bottom bottom',
-        onUpdate: (s) => setActive(Math.min(2, Math.floor(s.progress * 3))),
-      });
-    } else {
-      const path = $('#morph-path', morph)!;
-      // timeline units: hold .35 · morph 1 · hold 1 · morph 1 · hold .35 = 3.7
-      // beats switch at each morph's midpoint: .85/3.7 ≈ .23 and 2.85/3.7 ≈ .77
-      const tl = gsap.timeline({
-        defaults: { ease: 'sine.inOut' },
-        scrollTrigger: {
-          trigger: morph,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1.2,
-          onUpdate: (s) => setActive(s.progress < 0.23 ? 0 : s.progress < 0.77 ? 1 : 2),
-        },
-      });
-      tl.to({}, { duration: 0.35 })
-        .to(path, { morphSVG: { shape: '#shape-fiber', shapeIndex: 'auto' }, duration: 1 })
-        .to({}, { duration: 1 })
-        .to(path, { morphSVG: { shape: '#shape-barbell', shapeIndex: 'auto' }, duration: 1 })
-        .to({}, { duration: 0.35 });
-    }
+
+    show(0, false);
+    steps.forEach((s) => s.addEventListener('click', () => show(Number(s.dataset.go))));
+    prev.addEventListener('click', () => show(active - 1));
+    next.addEventListener('click', () => show(active + 1));
   }
 
   // Manifesto keywords

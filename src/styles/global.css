@@ -204,23 +204,6 @@ html.lenis body { height: auto; }
   75%  { opacity: var(--g-min, 0.55); }
   100% { opacity: var(--g-min, 0.55); }
 }
-/* A phase word is visible for one quarter of the cycle */
-@keyframes breath-phase {
-  0%    { opacity: 0; transform: translateY(0.35em); filter: blur(3px); }
-  4%    { opacity: 1; transform: none; filter: blur(0); }
-  21%   { opacity: 1; transform: none; filter: blur(0); }
-  25%   { opacity: 0; transform: translateY(-0.35em); filter: blur(3px); }
-  100%  { opacity: 0; }
-}
-/* The box tracer: one side per phase */
-@keyframes breath-trace {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
-}
-@keyframes breath-dot {
-  0%   { offset-distance: 0%; }
-  100% { offset-distance: 100%; }
-}
 
 .breathe {
   animation: breath-scale var(--breath) infinite both;
@@ -230,10 +213,7 @@ html.lenis body { height: auto; }
   animation: breath-glow var(--breath) infinite both;
 }
 .breath-paused .breathe,
-.breath-paused .breathe-glow,
-.breath-paused .breath-phase,
-.breath-paused .breath-trace,
-.breath-paused .breath-dot {
+.breath-paused .breathe-glow {
   animation-play-state: paused;
 }
 
