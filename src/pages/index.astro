@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import BreathingHero from '../components/BreathingHero.astro';
+import Marquee from '../components/Marquee.astro';
+import MindMuscleMorph from '../components/MindMuscleMorph.astro';
+import Manifesto from '../components/Manifesto.astro';
+import AppShowcase from '../components/AppShowcase.astro';
+import CoachSpotlight from '../components/CoachSpotlight.astro';
+import PartnerCard from '../components/PartnerCard.astro';
+import Testimonials from '../components/Testimonials.astro';
+import SemesterCountdown from '../components/SemesterCountdown.astro';
+import Footer from '../components/Footer.astro';
+import StickyCTA from '../components/StickyCTA.astro';
+---
+
+<Base>
+  <BreathingHero />
+  <main id="main">
+    <Marquee />
+    <MindMuscleMorph />
+    <Manifesto />
+    <AppShowcase />
+    <CoachSpotlight />
+    <PartnerCard />
+    <Testimonials />
+    <SemesterCountdown />
+  </main>
+  <Footer />
+  <StickyCTA />
+</Base>
+
+<script>
+  import '../scripts/motion';
+</script>

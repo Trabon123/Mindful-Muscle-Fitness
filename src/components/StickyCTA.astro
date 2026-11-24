@@ -1,0 +1,64 @@
+---
+/**
+ * Mobile-only bottom bar. Appears once the hero CTAs scroll out of view and
+ * hides again when any element marked [data-hide-sticky] (e.g. the footer)
+ * is on screen, so it never covers the same actions twice.
+ */
+import Icon from './Icon.astro';
+import { business, stickyCta, bookHref } from '../data/site';
+---
+
+<div class="sticky-cta fixed inset-x-0 bottom-0 z-50 md:hidden" data-visible="false">
+  <nav
+    aria-label="Quick actions"
+    class="mx-3 mb-[max(0.75rem,env(safe-area-inset-bottom))] flex gap-2 rounded-full bg-ink/92 p-1.5 shadow-[0_18px_50px_-18px_rgba(18,22,20,.7)] backdrop-blur-md"
+  >
+    <a href={bookHref} class="btn btn-primary !min-h-12 flex-1" aria-label={stickyCta.bookAria}>
+      {stickyCta.book}
+      <Icon name="arrow" size={17} />
+    </a>
+    <a href={business.phone.href} class="btn !min-h-12 flex-1 text-bone shadow-[inset_0_0_0_1px_var(--hairline-light)]" aria-label={stickyCta.callAria}>
+      <Icon name="phone" size={17} />
+      {stickyCta.call}
+    </a>
+  </nav>
+</div>
+
+<style>
+  .sticky-cta {
+    transform: translateY(130%);
+    visibility: hidden;
+    transition:
+      transform 0.9s var(--ease-breath),
+      visibility 0s linear 0.9s;
+  }
+  .sticky-cta[data-visible='true'] {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform 0.9s var(--ease-breath),
+      visibility 0s;
+  }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>('.sticky-cta');
+  const heroCtas = document.getElementById('hero-ctas');
+  if (bar && heroCtas && 'IntersectionObserver' in window) {
+    let heroVisible = true;
+    const blockers = new Set<Element>();
+    const update = () => {
+      bar.dataset.visible = String(!heroVisible && blockers.size === 0);
+    };
+    new IntersectionObserver(([entry]) => {
+      // Only count the hero as "visible" while its CTAs are on screen or below the fold.
+      heroVisible = entry.isIntersecting || entry.boundingClientRect.top > 0;
+      update();
+    }).observe(heroCtas);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? blockers.add(e.target) : blockers.delete(e.target)));
+      update();
+    });
+    document.querySelectorAll('[data-hide-sticky]').forEach((el) => io.observe(el));
+  }
+</script>

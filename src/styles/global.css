@@ -1,0 +1,295 @@
+@import "tailwindcss";
+
+/* ───────────────────────── Fonts (self-hosted, latin subset) ───────────────────────── */
+/* Italic = the "mind" voice. A static instance (wght 300, opsz 144), subset
+   to Latin: 19 KB instead of 81 KB. `block` because it is preloaded and tiny,
+   and swapping would shift the hero headline. */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces-italic.woff2") format("woff2");
+  font-weight: 300;
+  font-style: italic;
+  font-display: block;
+}
+/* Upright = long-form serif (subhead, manifesto, quotes). Static wght 300 /
+   opsz 72 instance, 16 KB. */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/fraunces.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: block;
+}
+/* Anton (the LCP face) is inlined as a data URI in Base.astro */
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/fonts/inter-tight.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+/* Metric-adjusted fallbacks so the swap doesn't shift layout */
+@font-face {
+  font-family: "Anton Fallback";
+  src: local("Arial Narrow Bold"), local("ArialNarrow-Bold"), local("Arial Bold"), local("Arial");
+  size-adjust: 96%;
+  ascent-override: 118%;
+  descent-override: 33%;
+}
+@font-face {
+  font-family: "Fraunces Fallback";
+  src: local("Georgia Italic"), local("Georgia"), local("Times New Roman");
+  size-adjust: 104%;
+  ascent-override: 94%;
+  descent-override: 25%;
+}
+@font-face {
+  font-family: "Inter Tight Fallback";
+  src: local("Arial");
+  size-adjust: 95%;
+  ascent-override: 102%;
+  descent-override: 25%;
+}
+
+/* ───────────────────────── Design tokens ───────────────────────── */
+@theme {
+  --color-bone: #f4f1ea;
+  --color-bone-dim: #e9e4d8;
+  --color-ink: #121614;
+  --color-ink-soft: #2a302c;
+  --color-sage: #9db4a0;
+  --color-sage-deep: #4e6a55; /* sage for text on bone (AA) */
+  --color-orange: #e2572b;
+
+  --font-mind: "Fraunces", "Fraunces Fallback", Georgia, serif;
+  --font-muscle: "Anton", "Anton Fallback", Impact, sans-serif;
+  --font-sans: "Inter Tight", "Inter Tight Fallback", system-ui, sans-serif;
+
+  --ease-breath: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-exhale: cubic-bezier(0.33, 0, 0.15, 1);
+
+  --breakpoint-3xl: 1800px;
+}
+
+:root {
+  --breath: 16s; /* box breathing: 4 in · 4 hold · 4 out · 4 hold */
+  --hairline: color-mix(in oklab, var(--color-ink) 14%, transparent);
+  --hairline-light: color-mix(in oklab, var(--color-bone) 16%, transparent);
+  color-scheme: light;
+}
+
+/* ───────────────────────── Base ───────────────────────── */
+@layer base {
+  html {
+    background: var(--color-bone);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--color-bone);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-sage);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-orange);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+  .on-ink :focus-visible {
+    outline-color: var(--color-sage);
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* ───────────────────────── Utilities ───────────────────────── */
+@utility mind {
+  font-family: var(--font-mind);
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.02em;
+}
+@utility muscle {
+  font-family: var(--font-muscle);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.86;
+}
+@utility micro {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* Film grain: static SVG noise, fixed, never repainted */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+@layer components {
+/* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    min-height: 3.25rem;
+    padding: 0 1.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    transition: transform 0.8s var(--ease-breath), background-color 0.8s var(--ease-breath),
+      color 0.8s var(--ease-breath), box-shadow 0.8s var(--ease-breath);
+  }
+  .btn-primary {
+    background: var(--color-orange);
+    color: var(--color-ink); /* ink on orange ≈ 5.0:1, AA */
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-orange) 0%, transparent);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 40px -14px color-mix(in oklab, var(--color-orange) 70%, transparent);
+  }
+  .btn-ghost {
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-ink) 30%, transparent);
+  }
+  .btn-ghost:hover {
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+  .btn-ink {
+    background: var(--color-ink);
+    color: var(--color-bone);
+  }
+}
+
+/* ───────────────────────── The breath clock ─────────────────────────
+   One 16s cycle shared by every breathing element. Each element runs the
+   same duration from page load, so they stay in phase with each other. */
+@keyframes breath-scale {
+  0%   { transform: scale(var(--b-min, 0.82)); animation-timing-function: var(--ease-breath); }
+  25%  { transform: scale(var(--b-max, 1.12)); }
+  50%  { transform: scale(var(--b-max, 1.12)); animation-timing-function: var(--ease-breath); }
+  75%  { transform: scale(var(--b-min, 0.82)); }
+  100% { transform: scale(var(--b-min, 0.82)); }
+}
+@keyframes breath-glow {
+  0%   { opacity: var(--g-min, 0.55); animation-timing-function: var(--ease-breath); }
+  25%  { opacity: var(--g-max, 1); }
+  50%  { opacity: var(--g-max, 1); animation-timing-function: var(--ease-breath); }
+  75%  { opacity: var(--g-min, 0.55); }
+  100% { opacity: var(--g-min, 0.55); }
+}
+/* A phase word is visible for one quarter of the cycle */
+@keyframes breath-phase {
+  0%    { opacity: 0; transform: translateY(0.35em); filter: blur(3px); }
+  4%    { opacity: 1; transform: none; filter: blur(0); }
+  21%   { opacity: 1; transform: none; filter: blur(0); }
+  25%   { opacity: 0; transform: translateY(-0.35em); filter: blur(3px); }
+  100%  { opacity: 0; }
+}
+/* The box tracer: one side per phase */
+@keyframes breath-trace {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+@keyframes breath-dot {
+  0%   { offset-distance: 0%; }
+  100% { offset-distance: 100%; }
+}
+
+.breathe {
+  animation: breath-scale var(--breath) infinite both;
+  will-change: transform;
+}
+.breathe-glow {
+  animation: breath-glow var(--breath) infinite both;
+}
+.breath-paused .breathe,
+.breath-paused .breathe-glow,
+.breath-paused .breath-phase,
+.breath-paused .breath-trace,
+.breath-paused .breath-dot {
+  animation-play-state: paused;
+}
+
+/* ───────────────────────── TODO markers ─────────────────────────
+   Every missing fact is visible on the page, so nothing ships by accident. */
+.todo,
+.todo-dark {
+  display: inline-block;
+  padding: 0.35em 0.7em;
+  border-radius: 0.4em;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.82em;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+.todo {
+  color: var(--color-ink);
+  background: color-mix(in oklab, var(--color-orange) 10%, var(--color-bone));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-orange) 55%, transparent);
+}
+.todo-dark {
+  color: var(--color-bone);
+  background: color-mix(in oklab, var(--color-orange) 14%, var(--color-ink));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-orange) 60%, transparent);
+}
+
+/* ───────────────────────── Scroll reveal ─────────────────────────
+   Only elements still below the fold when motion.ts boots are hidden,
+   so there is never a flash of hidden content or a no-JS blank page. */
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(2rem);
+  filter: blur(6px);
+}
+.reveal-in {
+  transition:
+    opacity 1.4s var(--ease-breath) var(--d, 0s),
+    transform 1.8s var(--ease-exhale) var(--d, 0s),
+    filter 1.4s var(--ease-breath) var(--d, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *:not(.allow-fade),
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .breathe { transform: scale(1) !important; }
+  /* Crossfades are the reduced-motion substitute for morphs: opacity only. */
+  .allow-fade {
+    transition-property: opacity !important;
+    transition-duration: 0.8s !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

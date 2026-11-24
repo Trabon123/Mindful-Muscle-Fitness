@@ -1,0 +1,232 @@
+---
+/**
+ * BreathingHero: zero-JS, CSS-only hero. The orb, phase label and box tracer
+ * all run on the shared 16s breath clock defined in global.css.
+ * The one tiny script only handles the pause toggle (WCAG 2.2.2).
+ */
+import Icon from './Icon.astro';
+import { business, hero, nav, bookHref, bookIsFallback } from '../data/site';
+---
+
+<section id="top" class="hero relative isolate flex min-h-[100svh] flex-col overflow-hidden">
+  <!-- Header -->
+  <header class="relative z-20 mx-auto flex w-full max-w-[1800px] items-center justify-between px-5 pt-5 md:px-10 md:pt-8">
+    <a href="#top" class="group flex items-baseline gap-2 leading-none">
+      <span class="mind text-[1.45rem] text-sage-deep">Mindful</span>{' '}
+      <span class="logo-muscle muscle text-[1.3rem] tracking-[0.02em]">Muscle</span>{' '}
+      <span class="micro hidden text-[0.62rem] text-ink/70 sm:inline">Fitness</span>
+      <span class="sr-only">, back to top</span>
+    </a>
+    <div class="flex items-center gap-5">
+      <p class="micro flex items-center gap-2 text-[0.66rem] text-ink/70">
+        <span class="breathe-glow relative inline-block size-1.5 rounded-full bg-sage-deep" style="--g-min:.35" aria-hidden="true"></span>
+        <span class="hidden sm:inline">{nav.openLabel}</span>
+        <span class="whitespace-nowrap sm:hidden">{business.hours.short}</span>
+      </p>
+      <a href={business.phone.href} class="btn btn-ghost hidden !min-h-10 !px-4 !text-[0.8rem] md:inline-flex">
+        <Icon name="phone" size={16} />
+        {business.phone.display}
+      </a>
+    </div>
+  </header>
+
+  <!-- Stage -->
+  <div class="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-6 md:py-4">
+    <!-- The breathing orb -->
+    <div class="orb-wrap pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="orb breathe"></div>
+      <div class="orb-ring breathe" style="--b-min:.9;--b-max:1.06"></div>
+    </div>
+
+    <h1 class="headline relative w-full max-w-[1800px] select-none">
+      <span class="sr-only">{hero.srHeadline}</span>
+      <span aria-hidden="true" class="word-mind mind block">{hero.wordMind}</span>
+      <span aria-hidden="true" class="word-muscle muscle block">{hero.wordMuscle}</span>
+    </h1>
+        <!-- Breath indicator: sits directly under the headline -->
+        <div class="breath-ui relative mt-6 flex items-center justify-center gap-4 md:mt-8">
+          <svg class="size-9 shrink-0 text-sage-deep" viewBox="0 0 36 36" aria-hidden="true">
+            <rect x="3" y="3" width="30" height="30" rx="2" fill="none" stroke="var(--hairline)" stroke-width="1" />
+            <rect class="breath-trace" x="3" y="3" width="30" height="30" rx="2" fill="none" stroke="currentColor"
+              stroke-width="2.25" stroke-linecap="round" pathLength="100" />
+          </svg>
+          <div class="min-w-0">
+            <p class="phase-stack mind text-[1.65rem] leading-none text-ink" aria-hidden="true">
+              {hero.phases.map((p, i) => <span class="breath-phase" style={`--i:${i}`}>{p}</span>)}
+              <span class="phase-static">{hero.phases.join(' · ')}</span>
+            </p>
+            <p class="micro mt-1.5 text-[0.6rem] whitespace-nowrap text-ink/70">{hero.breathHint}</p>
+          </div>
+          <button
+            type="button"
+            class="breath-toggle grid size-10 shrink-0 place-items-center rounded-full text-ink/70 shadow-[inset_0_0_0_1px_var(--hairline)] transition-colors hover:text-ink"
+            aria-pressed="false"
+            aria-label={hero.pauseLabel}
+          >
+            <Icon name="pause" size={16} class="i-pause" />
+            <Icon name="play" size={16} class="i-play hidden" />
+          </button>
+        </div>
+  </div>
+
+  <!-- Base -->
+  <div class="relative z-20 mx-auto w-full max-w-[1800px] px-5 pb-8 md:px-10 md:pb-10">
+    <div class="mb-6 flex items-center justify-between border-t border-[var(--hairline)] pt-4 md:mb-8">
+      <span class="micro text-[0.64rem] text-ink/70">{hero.eyebrowLeft}</span>
+      <span class="micro text-[0.64rem] text-ink/70">{hero.eyebrowRight}</span>
+    </div>
+
+    <div class="grid items-end gap-7 lg:grid-cols-12 lg:gap-6">
+
+      <!-- Subhead -->
+      <div class="lg:col-span-6">
+        <p class="text-balance font-[family-name:var(--font-mind)] text-[1.7rem] leading-[1.08] font-light tracking-[-0.015em] md:text-[2.35rem]" style="font-variation-settings:'opsz' 72">
+          {hero.subhead}
+        </p>
+        <p class="mt-2 text-[0.95rem] text-ink/70">{hero.support}</p>
+      </div>
+
+      <!-- CTAs -->
+      <div id="hero-ctas" class="flex flex-col gap-3 sm:flex-row lg:col-span-6 lg:justify-end">
+        <a href={bookHref} class="btn btn-primary group" data-todo={bookIsFallback ? 'booking-link' : undefined}>
+          {hero.primaryCta}
+          <Icon name="arrow" size={18} class="transition-transform duration-700 ease-[var(--ease-breath)] group-hover:translate-x-1" />
+        </a>
+        <a href={business.phone.href} class="btn btn-ghost">
+          <Icon name="phone" size={17} />
+          {hero.secondaryCta}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Headline ─────────────────────────────────────────── */
+  .headline {
+    --size: min(25vw, 24svh);
+    --mind-x: -9%;
+    --muscle-x: 3%;
+    display: grid;
+    justify-items: center;
+    line-height: 0.8;
+  }
+  /* Fixed em widths (measured from the real fonts) so the boxes never depend
+     on which font is loaded: no layout shift while Anton/Fraunces arrive.
+     If the words in src/data/site.ts change, re-measure these. */
+  .word-mind,
+  .word-muscle {
+    white-space: nowrap;
+    text-align: center;
+  }
+  .word-mind { width: 1.91em; translate: var(--mind-x) 0; }
+  .word-muscle { width: 2.94em; translate: var(--muscle-x) 0; }
+  /* MIND comes into focus; MUSCLE (the LCP element) settles with transform only,
+     because a blurred first paint would not count as LCP. */
+  .word-mind {
+    animation: focus-in 2.4s var(--ease-exhale) both;
+  }
+  .word-muscle {
+    animation: settle-in 2s var(--ease-exhale) both;
+  }
+  .word-mind {
+    position: relative;
+    z-index: 2;
+    font-size: calc(var(--size) * 1.02);
+    color: var(--color-sage-deep);
+    /* knock-out halo where the serif crosses the grotesk */
+    -webkit-text-stroke: 0.05em var(--color-bone);
+    paint-order: stroke fill;
+    padding-inline: 0.08em;
+  }
+  .word-muscle {
+    position: relative;
+    z-index: 1;
+    font-size: calc(var(--size) * 1.18);
+    margin-top: -0.3em;
+    color: var(--color-ink);
+  }
+  @media (min-width: 768px) {
+    .headline { --size: min(21vw, 27svh); --mind-x: -24%; --muscle-x: 4%; }
+    .word-muscle { margin-top: -0.28em; }
+  }
+  @media (min-width: 1024px) {
+    .headline { --size: min(17vw, 30svh); }
+  }
+  @keyframes settle-in {
+    from { transform: translateY(0.06em) scale(1.02); }
+    to   { transform: none; }
+  }
+  @keyframes focus-in {
+    from { transform: translateY(0.12em) scale(0.985); filter: blur(14px); }
+    to   { transform: none; filter: blur(0); }
+  }
+
+  /* Logo wordmark: fixed em width so a font swap can't push its neighbours */
+  .logo-muscle { display: inline-block; width: 3.1em; }
+
+  /* ── Orb ──────────────────────────────────────────────── */
+  .orb,
+  .orb-ring {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    translate: -50% -50%;
+    border-radius: 50%;
+  }
+  .orb {
+    --b-min: 0.8;
+    --b-max: 1.1;
+    width: min(118vw, 72svh);
+    aspect-ratio: 1;
+    background:
+      radial-gradient(closest-side, color-mix(in oklab, var(--color-sage) 78%, transparent) 0%,
+        color-mix(in oklab, var(--color-sage) 42%, transparent) 46%,
+        color-mix(in oklab, var(--color-sage) 0%, transparent) 100%);
+  }
+  .orb-ring {
+    width: min(150vw, 92svh);
+    aspect-ratio: 1;
+    border: 1px solid color-mix(in oklab, var(--color-sage-deep) 22%, transparent);
+  }
+
+  /* ── Breath indicator ─────────────────────────────────── */
+  .breath-trace {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: breath-trace var(--breath) linear infinite;
+  }
+  .phase-stack {
+    display: grid;
+    height: 1.15em;
+    overflow: hidden;
+  }
+  .phase-stack > span { grid-area: 1 / 1; }
+  .breath-phase {
+    opacity: 0;
+    animation: breath-phase var(--breath) var(--ease-breath) infinite;
+    /* phase i starts at i × 4s; expressed as a negative delay so all start in sync */
+    animation-delay: calc((var(--i) * 4s) - var(--breath));
+  }
+  .phase-static { display: none; }
+
+  :global(.breath-paused) .breath-toggle :global(.i-pause) { display: none; }
+  :global(.breath-paused) .breath-toggle :global(.i-play) { display: block; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .breath-phase { display: none; }
+    .breath-trace { animation: none; stroke-dashoffset: 0; }
+    .phase-static { display: block; font-size: 0.8em; }
+    .phase-stack { height: auto; }
+    .breath-toggle { display: none; }
+    .word-mind, .word-muscle { animation: none; }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.breath-toggle');
+  btn?.addEventListener('click', () => {
+    const paused = document.documentElement.classList.toggle('breath-paused');
+    btn.setAttribute('aria-pressed', String(paused));
+  });
+</script>

@@ -1,0 +1,128 @@
+---
+/**
+ * Countdown to the next CU semester (date in src/data/sections.ts).
+ * Rendered at build time, then kept fresh client-side once a minute.
+ * Minute precision on purpose: no ticking seconds. Calm, not urgent.
+ * After the date passes it swaps to an "already underway" message.
+ */
+import Icon from './Icon.astro';
+import { semester } from '../data/sections';
+import { bookHref } from '../data/site';
+
+const target = new Date(semester.startsAt).getTime();
+const diff = Math.max(0, target - Date.now());
+const parts = {
+  days: Math.floor(diff / 864e5),
+  hours: Math.floor((diff % 864e5) / 36e5),
+  minutes: Math.floor((diff % 36e5) / 6e4),
+};
+const started = diff === 0;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section id="semester" class="px-5 py-[8vh] md:px-10" aria-labelledby="semester-title">
+  <div
+    class="semester relative mx-auto max-w-[1500px] overflow-hidden rounded-[2rem] px-6 py-14 md:px-14 md:py-20"
+    data-countdown={semester.startsAt}
+    data-started={String(started)}
+    data-reveal
+  >
+    <div class="orb breathe" aria-hidden="true" style="--b-min:.85;--b-max:1.1"></div>
+
+    <div class="relative grid items-end gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-7">
+        <h2 id="semester-title" class="leading-[0.86]">
+          <span class="mind block text-[clamp(2.8rem,7vw,6.5rem)]">{semester.title.mind}</span>
+          <span class="muscle block text-[clamp(3.4rem,10vw,9.5rem)]">{semester.title.muscle}</span>
+        </h2>
+        <p class="mt-6 max-w-[42ch] text-[1.08rem] leading-relaxed text-ink/80">{semester.body}</p>
+        <a href={bookHref} class="btn btn-primary group mt-8">
+          {semester.cta}
+          <Icon name="arrow" size={18} class="transition-transform duration-700 group-hover:translate-x-1" />
+        </a>
+      </div>
+
+      <div class="lg:col-span-5">
+        <div class="count-live" aria-hidden={started ? 'true' : undefined}>
+          <p class="micro mb-4 flex items-center gap-3 text-ink/70">
+            <Icon name="calendar" size={16} />
+            {semester.label}
+          </p>
+          <p class="sr-only" aria-live="off" data-sr>
+            {parts.days} {semester.units.days}, {parts.hours} {semester.units.hours}, {parts.minutes} minutes
+          </p>
+          <div class="grid grid-cols-3 gap-2 sm:gap-3" aria-hidden="true">
+            {(['days', 'hours', 'minutes'] as const).map((u) => (
+              <div class="unit rounded-[1rem] px-3 py-5 text-center sm:px-4 sm:py-6">
+                <span class="muscle block text-[clamp(2.6rem,6vw,4.6rem)] leading-none tabular-nums" data-unit={u}>
+                  {u === 'days' ? parts.days : pad(parts[u])}
+                </span>
+                <span class="micro mt-2 block text-[0.6rem] text-ink/65">{semester.units[u]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <p class="count-done mind text-[clamp(1.6rem,2.6vw,2.2rem)] leading-tight">{semester.started}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .semester {
+    background: color-mix(in oklab, var(--color-sage) 46%, var(--color-bone));
+    isolation: isolate;
+  }
+  .orb {
+    position: absolute;
+    right: -12%;
+    top: -30%;
+    width: min(70vw, 52rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--color-bone) 75%, transparent), transparent);
+    z-index: -1;
+  }
+  .unit {
+    background: color-mix(in oklab, var(--color-bone) 70%, transparent);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+  }
+  .count-done { display: none; }
+  .semester[data-started='true'] .count-live { display: none; }
+  .semester[data-started='true'] .count-done { display: block; }
+</style>
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-countdown]');
+  if (el) {
+    const target = new Date(el.dataset.countdown!).getTime();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const tick = () => {
+      const diff = Math.max(0, target - Date.now());
+      if (diff === 0) {
+        el.dataset.started = 'true';
+        return false;
+      }
+      const d = Math.floor(diff / 864e5);
+      const h = Math.floor((diff % 864e5) / 36e5);
+      const m = Math.floor((diff % 36e5) / 6e4);
+      const set = (u: string, v: string) => {
+        const n = el.querySelector(`[data-unit="${u}"]`);
+        if (n && n.textContent !== v) n.textContent = v;
+      };
+      set('days', String(d));
+      set('hours', pad(h));
+      set('minutes', pad(m));
+      const sr = el.querySelector('[data-sr]');
+      if (sr) sr.textContent = `${d} days, ${h} hours, ${m} minutes`;
+      return true;
+    };
+    if (tick()) {
+      // align to the minute boundary, then tick once a minute
+      setTimeout(() => {
+        tick();
+        setInterval(tick, 6e4);
+      }, 6e4 - (Date.now() % 6e4));
+    }
+  }
+</script>

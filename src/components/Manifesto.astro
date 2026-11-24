@@ -1,0 +1,100 @@
+---
+/**
+ * The mission, verbatim, typeset as a manifesto. Keywords light up one at a
+ * time as you scroll (driven from motion.ts). Without JS or with reduced
+ * motion, every keyword is shown lit.
+ */
+import { manifesto } from '../data/sections';
+
+type Token = { text: string; kw?: number; mind?: boolean };
+
+// Split the verbatim mission into plain runs and keyword spans, matching each
+// keyword in order so repeated words (e.g. "achieve") resolve to the right one.
+const tokens: Token[] = [];
+let cursor = 0;
+manifesto.keywords.forEach((kw, i) => {
+  const re = new RegExp(`\\b${kw}\\b`, 'i');
+  const rest = manifesto.text.slice(cursor);
+  const m = re.exec(rest);
+  if (!m) throw new Error(`Manifesto keyword not found in order: ${kw}`);
+  if (m.index > 0) tokens.push({ text: rest.slice(0, m.index) });
+  tokens.push({ text: m[0], kw: i, mind: (manifesto.mindWords as readonly string[]).includes(kw) });
+  cursor += m.index + m[0].length;
+});
+tokens.push({ text: manifesto.text.slice(cursor) });
+---
+
+<section id="mission" class="manifesto relative px-5 py-[22vh] md:px-10" data-manifesto aria-labelledby="mission-label">
+  <div class="mx-auto max-w-[1500px]">
+    <p id="mission-label" class="micro mb-10 flex items-center gap-4 text-sage-deep md:mb-14">
+      <span class="h-px w-10 bg-sage-deep/50"></span>
+      {manifesto.eyebrow}
+    </p>
+    <blockquote class="m-0">
+      <p class="mtext">
+        {
+          tokens.map((t) =>
+            t.kw === undefined ? (
+              t.text
+            ) : (
+              <span class:list={['kw', t.mind ? 'kw-mind' : 'kw-muscle']} data-kw={t.kw}>
+                {t.text}
+              </span>
+            ),
+          )
+        }
+      </p>
+      <footer class="mt-12 flex items-center gap-4 md:mt-16">
+        <svg class="size-6 text-sage-deep" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="3" width="18" height="18" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.25" />
+        </svg>
+        <cite class="micro not-italic text-ink/70">{manifesto.signature}</cite>
+      </footer>
+    </blockquote>
+  </div>
+</section>
+
+<style>
+  .mtext {
+    font-family: var(--font-mind);
+    font-weight: 300;
+    font-variation-settings: 'opsz' 96, 'SOFT' 30;
+    font-size: clamp(1.85rem, 4.6vw, 4.6rem);
+    line-height: 1.12;
+    letter-spacing: -0.022em;
+    text-wrap: pretty;
+    color: var(--color-ink);
+  }
+  /* Dim state only once motion.ts has taken over. Dimmed text is ≥ 3:1 (large text AA). */
+  :global(.manifesto.is-enhanced) .mtext {
+    color: color-mix(in oklab, var(--color-ink) 52%, var(--color-bone));
+  }
+  .kw {
+    position: relative;
+    color: var(--color-ink);
+    transition:
+      color 1.2s var(--ease-breath),
+      background-size 1.6s var(--ease-exhale),
+      font-variation-settings 1.2s var(--ease-breath);
+    background-image: linear-gradient(var(--color-sage), var(--color-sage));
+    background-repeat: no-repeat;
+    background-position: 0 92%;
+    background-size: 100% 0.09em;
+  }
+  .kw-mind { font-style: italic; }
+  .kw-muscle {
+    font-family: var(--font-muscle);
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.005em;
+    font-weight: 400;
+  }
+  :global(.manifesto.is-enhanced) .kw {
+    color: inherit;
+    background-size: 0% 0.09em;
+  }
+  :global(.manifesto.is-enhanced) .kw.is-lit {
+    color: var(--color-ink);
+    background-size: 100% 0.09em;
+  }
+</style>

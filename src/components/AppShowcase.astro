@@ -1,0 +1,353 @@
+---
+/**
+ * App showcase: a CSS-3D phone that tilts toward the cursor (motion.ts),
+ * with four designed screens. Features are an accessible tab set; each has an
+ * animated counter or ring. All numbers are labelled sample UI data.
+ */
+import { app } from '../data/sections';
+
+const { screens: s } = app;
+const ringC = 2 * Math.PI * 16; // r=16
+---
+
+<section id="app" class="app on-ink relative overflow-hidden bg-ink px-5 py-[16vh] text-bone md:px-10" aria-labelledby="app-title" data-app>
+  <div class="mx-auto grid max-w-[1500px] items-center gap-14 lg:grid-cols-12 lg:gap-10">
+    <!-- Copy + features -->
+    <div class="lg:col-span-6 lg:col-start-7 lg:row-start-1" data-reveal>
+      <p class="micro mb-5 text-sage">{app.eyebrow}</p>
+      <h2 id="app-title" class="leading-[0.9]">
+        <span class="mind block text-[clamp(2.6rem,6vw,5.6rem)] text-sage">{app.title.mind}</span>
+        <span class="muscle block text-[clamp(2.8rem,6.6vw,6.2rem)]">{app.title.muscle}</span>
+      </h2>
+      <p class="mt-6 max-w-[44ch] text-[1.05rem] leading-relaxed text-bone/75">{app.intro}</p>
+
+      <div role="tablist" aria-label="App features" aria-orientation="vertical" class="features mt-10 border-t border-[var(--hairline-light)]">
+        {app.features.map((f, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${f.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            aria-controls="phone-screen"
+            tabindex={i === 0 ? 0 : -1}
+            data-screen={f.id}
+            class="feature group grid w-full grid-cols-[3.25rem_1fr] items-center gap-5 border-b border-[var(--hairline-light)] py-5 text-left"
+          >
+            <span class="meter relative grid size-[3.25rem] place-items-center" aria-hidden="true">
+              <svg viewBox="0 0 40 40" class="absolute inset-0 size-full -rotate-90">
+                <circle cx="20" cy="20" r="16" fill="none" stroke="var(--hairline-light)" stroke-width="1.5" />
+                {f.meter.kind === 'ring' && (
+                  <circle class="ring" cx="20" cy="20" r="16" fill="none" stroke="var(--color-sage)" stroke-width="2"
+                    stroke-linecap="round" stroke-dasharray={ringC} style={`--c:${ringC};--to:${ringC * (1 - f.meter.value)}`} stroke-dashoffset={ringC * (1 - f.meter.value)} />
+                )}
+              </svg>
+              {f.meter.kind === 'counter' ? (
+                <span class="count muscle text-[1.05rem] text-orange" data-count={f.meter.value}>{f.meter.value}</span>
+              ) : (
+                <span class="muscle text-[0.8rem] text-sage">{Math.round(f.meter.value * 100)}%</span>
+              )}
+            </span>
+            <span>
+              <span class="flex items-baseline justify-between gap-4">
+                <span class="text-[1.1rem] font-semibold tracking-[-0.01em]">{f.title}</span>
+                <span class="micro hidden text-[0.6rem] text-bone/60 sm:inline">{f.meter.label}</span>
+              </span>
+              <span class="mt-1 block text-[0.95rem] leading-snug text-bone/70">{f.body}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <p class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[0.8rem] text-bone/60">
+        <span>{app.sampleNote}</span>
+        {!app.storeLinks && <span class="micro text-[0.62rem] text-orange">{app.storeTodo}</span>}
+      </p>
+    </div>
+
+    <!-- Phone -->
+    <div class="phone-stage relative grid place-items-center lg:col-span-6 lg:row-start-1" aria-hidden="false">
+      <div class="glow breathe" aria-hidden="true" style="--b-min:.85;--b-max:1.1"></div>
+      <div class="phone" data-tilt>
+        <div class="phone-body">
+          <div class="phone-edge" aria-hidden="true"></div>
+          <div id="phone-screen" role="tabpanel" aria-labelledby="tab-pr" class="screen" data-active="pr" tabindex="0">
+            <div class="status" aria-hidden="true">
+              <span>9:41</span>
+              <span class="chip">{app.sampleChip}</span>
+            </div>
+
+            <!-- PR tracker -->
+            <div class="scr allow-fade" data-id="pr">
+              <p class="s-eyebrow">{s.pr.title}</p>
+              <p class="s-lift">{s.pr.lift}</p>
+              <p class="s-pr"><span class="muscle">{s.pr.value}</span><span class="s-unit">{s.pr.unit}</span></p>
+              <p class="s-badge">↑ {s.pr.delta}</p>
+              <div class="bars" aria-hidden="true">
+                {s.pr.history.map((h, i) => <span style={`--h:${h}`} class:list={{ last: i === s.pr.history.length - 1 }} />)}
+              </div>
+              <p class="s-foot">Last 7 sessions</p>
+            </div>
+
+            <!-- Apple Watch -->
+            <div class="scr allow-fade" data-id="watch">
+              <p class="s-eyebrow">{s.watch.title}</p>
+              <div class="watch-rings">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                  <circle cx="60" cy="60" r="50" class="wr-track" />
+                  <circle cx="60" cy="60" r="50" class="wr wr-a" pathLength="100" />
+                  <circle cx="60" cy="60" r="38" class="wr-track" />
+                  <circle cx="60" cy="60" r="38" class="wr wr-b" pathLength="100" />
+                </svg>
+                <div class="wr-center"><span class="muscle">{s.watch.steps}</span><span>{s.watch.stepsLabel}</span></div>
+              </div>
+              <div class="hr">
+                <svg viewBox="0 0 160 36" aria-hidden="true"><path class="hr-line" pathLength="100" d="M0 20h40l6-10 8 22 7-30 7 26 5-8h87" /></svg>
+                <p><span class="muscle">{s.watch.bpm}</span> <span class="s-unit">bpm</span></p>
+                <p class="s-foot">{s.watch.bpmLabel} · {s.watch.source}</p>
+              </div>
+            </div>
+
+            <!-- Habit streak -->
+            <div class="scr allow-fade" data-id="streak">
+              <p class="s-eyebrow">{s.streak.title}</p>
+              <div class="flame-wrap">
+                <svg class="flame" viewBox="0 0 64 80" aria-hidden="true">
+                  <path class="flame-outer" d="M32 4C36 20 52 28 52 50a20 20 0 0 1-40 0c0-10 5-17 10-22 0 8 3 13 8 15-2-14 0-28 2-39Z" />
+                  <path class="flame-inner" d="M32 40c3 7 10 10 10 18a10 10 0 0 1-20 0c0-6 4-9 6-12 1 4 2 6 4 7 0-5-1-9 0-13Z" />
+                </svg>
+                <p class="s-streak"><span class="muscle">{s.streak.days}</span><span>day streak</span></p>
+              </div>
+              <ul class="habits">
+                {s.streak.habits.map((h) => <li><span class="dot" />{h}</li>)}
+              </ul>
+            </div>
+
+            <!-- Coach check-in -->
+            <div class="scr allow-fade" data-id="coach">
+              <p class="s-eyebrow">{s.coach.title}</p>
+              <div class="msg">
+                <span class="avatar" aria-hidden="true">C</span>
+                <div>
+                  <p class="msg-from">{s.coach.from}</p>
+                  <p class="msg-body">{s.coach.note}</p>
+                </div>
+              </div>
+              <ul class="checks">
+                {s.coach.items.map((it) => (
+                  <li>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3 3 7-7" /></svg>
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="phone-shadow" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Feature tabs ─────────────────────────────────────── */
+  .feature {
+    opacity: 0.62;
+    transition: opacity 0.9s var(--ease-breath);
+    cursor: pointer;
+  }
+  .feature[aria-selected='true'],
+  .feature:hover { opacity: 1; }
+  .ring { transition: stroke-dashoffset 2.4s var(--ease-exhale); }
+  :global(.app.is-pending) .ring { stroke-dashoffset: var(--c); }
+
+  /* ── Phone ────────────────────────────────────────────── */
+  .phone-stage {
+    --pw: clamp(220px, min(24vw, 34svh), 330px);
+    perspective: 1600px;
+    min-height: calc(var(--pw) * 2.25);
+  }
+  .glow {
+    position: absolute;
+    width: calc(var(--pw) * 2.4);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--color-sage) 32%, transparent), transparent);
+  }
+  .phone {
+    --rx: 6deg;
+    --ry: -14deg;
+    position: relative;
+    width: var(--pw);
+    aspect-ratio: 9 / 19.5;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(1.5deg);
+    font-size: calc(var(--pw) / 20);
+    will-change: transform;
+  }
+  .phone-body {
+    position: absolute;
+    inset: 0;
+    border-radius: 2.6em;
+    padding: 0.55em;
+    background: linear-gradient(145deg, #2c332f, #0c0f0d 60%);
+    box-shadow:
+      inset 0 0 0 1px rgba(244, 241, 234, 0.12),
+      inset 0 1px 0 rgba(244, 241, 234, 0.25),
+      0 2em 4em -1.5em rgba(0, 0, 0, 0.7);
+    transform: translateZ(0);
+  }
+  .phone-edge {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform: translateZ(-14px);
+    background: #070908;
+  }
+  .phone-shadow {
+    position: absolute;
+    bottom: 2%;
+    width: calc(var(--pw) * 0.9);
+    height: 1.6rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent);
+    filter: blur(6px);
+  }
+  .screen {
+    position: relative;
+    height: 100%;
+    border-radius: 2.1em;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, var(--color-sage) 16%, transparent), transparent 70%),
+      #151a17;
+    color: var(--color-bone);
+    padding: 1.1em 1.25em;
+  }
+  .screen:focus-visible { outline-offset: 6px; }
+  .status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.62em;
+    font-weight: 600;
+    opacity: 0.8;
+    margin-bottom: 1.8em;
+  }
+  .chip {
+    border: 1px solid rgba(244, 241, 234, 0.3);
+    border-radius: 99px;
+    padding: 0.15em 0.7em;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-size: 0.8em;
+  }
+  .scr {
+    position: absolute;
+    inset: 3.2em 1.25em 1.25em;
+    opacity: 0;
+    transform: translateY(0.8em);
+    filter: blur(4px);
+    transition:
+      opacity 0.9s var(--ease-breath),
+      transform 1.2s var(--ease-exhale),
+      filter 0.9s var(--ease-breath);
+  }
+  .screen[data-active='pr'] .scr[data-id='pr'],
+  .screen[data-active='watch'] .scr[data-id='watch'],
+  .screen[data-active='streak'] .scr[data-id='streak'],
+  .screen[data-active='coach'] .scr[data-id='coach'] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .s-eyebrow {
+    font-size: 0.6em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-sage);
+  }
+  .s-lift { margin-top: 0.4em; font-size: 1.05em; font-weight: 600; }
+  .s-pr { margin-top: 0.6em; display: flex; align-items: baseline; gap: 0.25em; }
+  .s-pr .muscle { font-size: 4.6em; color: var(--color-orange); line-height: 0.9; }
+  .s-unit { font-size: 0.75em; opacity: 0.7; }
+  .s-badge {
+    display: inline-block;
+    margin-top: 0.8em;
+    font-size: 0.62em;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-orange);
+  }
+  .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45em;
+    height: 13em;
+    margin-top: 2.6em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid rgba(244, 241, 234, 0.14);
+  }
+  .bars span {
+    flex: 1;
+    height: calc(var(--h) * 100%);
+    border-radius: 0.3em 0.3em 0.1em 0.1em;
+    background: color-mix(in oklab, var(--color-sage) 45%, transparent);
+    transform-origin: bottom;
+    transition: transform 1.4s var(--ease-exhale);
+  }
+  .bars span.last { background: var(--color-orange); }
+  .s-foot { margin-top: 0.7em; font-size: 0.6em; opacity: 0.6; }
+
+  .watch-rings { position: relative; width: 72%; margin: 1.2em auto 0; }
+  .watch-rings svg { width: 100%; transform: rotate(-90deg); }
+  .wr-track, .wr { fill: none; stroke-width: 8; }
+  .wr-track { stroke: rgba(244, 241, 234, 0.08); }
+  .wr { stroke-linecap: round; stroke-dasharray: 100; transition: stroke-dashoffset 2.2s var(--ease-exhale); }
+  .wr-a { stroke: var(--color-sage); stroke-dashoffset: 22; }
+  .wr-b { stroke: var(--color-bone); stroke-dashoffset: 40; opacity: 0.7; }
+  .wr-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+  .wr-center .muscle { font-size: 1.9em; line-height: 1; }
+  .wr-center span:last-child { font-size: 0.6em; opacity: 0.65; margin-top: 0.3em; }
+  .hr { margin-top: 1.6em; }
+  .hr svg { width: 100%; height: auto; }
+  .hr-line { fill: none; stroke: var(--color-orange); stroke-width: 1.6; stroke-linejoin: round; stroke-dasharray: 100; stroke-dashoffset: 0; transition: stroke-dashoffset 2s var(--ease-breath); }
+  .hr .muscle { font-size: 2.2em; }
+
+  .flame-wrap { display: grid; justify-items: center; margin-top: 1.6em; }
+  .flame { width: 42%; overflow: visible; }
+  .flame-outer { fill: var(--color-orange); transform-origin: 50% 90%; }
+  .flame-inner { fill: #f4b08f; transform-origin: 50% 90%; }
+  :global(.app.is-live) .flame-outer { animation: flicker 4s var(--ease-breath) infinite alternate; }
+  .s-streak { display: grid; justify-items: center; margin-top: 0.6em; }
+  .s-streak .muscle { font-size: 3.6em; line-height: 0.95; color: var(--color-orange); }
+  .s-streak span:last-child { font-size: 0.65em; opacity: 0.7; }
+  .habits { margin-top: 1.6em; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6em; font-size: 0.68em; }
+  .habits li { display: flex; align-items: center; gap: 0.5em; padding: 0.6em 0.7em; border-radius: 0.6em; background: rgba(244, 241, 234, 0.06); }
+  .dot { width: 0.55em; height: 0.55em; border-radius: 50%; background: var(--color-sage); }
+
+  .msg { margin-top: 1.2em; display: flex; gap: 0.7em; padding: 0.9em; border-radius: 1em; background: rgba(244, 241, 234, 0.07); }
+  .avatar { flex: none; display: grid; place-items: center; width: 2.2em; height: 2.2em; border-radius: 50%; background: var(--color-sage); color: var(--color-ink); font-weight: 700; font-size: 0.8em; }
+  .msg-from { font-size: 0.62em; font-weight: 600; color: var(--color-sage); letter-spacing: 0.06em; text-transform: uppercase; }
+  .msg-body { margin-top: 0.35em; font-size: 0.72em; line-height: 1.4; }
+  .checks { margin-top: 1.3em; display: grid; gap: 0.75em; font-size: 0.72em; }
+  .checks li { display: flex; align-items: center; gap: 0.7em; padding-bottom: 0.75em; border-bottom: 1px solid rgba(244, 241, 234, 0.1); }
+  .checks svg { width: 1.2em; height: 1.2em; fill: none; stroke: var(--color-sage); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Screen entrance details, replayed every time a tab becomes active */
+  .screen:not([data-active='pr']) .bars span { transform: scaleY(0.2); }
+  .screen:not([data-active='watch']) .wr-a,
+  .screen:not([data-active='watch']) .wr-b { stroke-dashoffset: 100; }
+  .screen:not([data-active='watch']) .hr-line { stroke-dashoffset: 100; }
+
+  @keyframes flicker {
+    0% { transform: scale(1, 1) skewX(0deg); }
+    50% { transform: scale(0.97, 1.03) skewX(-1.5deg); }
+    100% { transform: scale(1.02, 0.98) skewX(1deg); }
+  }
+
+  @media (max-width: 1023px) {
+    .phone-stage { --pw: clamp(210px, min(58vw, 46svh), 300px); }
+  }
+</style>

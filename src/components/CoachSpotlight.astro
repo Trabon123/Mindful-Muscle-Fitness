@@ -1,0 +1,60 @@
+---
+import SmartImage from './SmartImage.astro';
+import { coach } from '../data/sections';
+import type { ImageId } from '../data/images';
+
+const teamIds: ImageId[] = ['trainer-1', 'trainer-2', 'trainer-3'];
+---
+
+<section id="coach" class="coach relative px-5 py-[16vh] md:px-10" aria-labelledby="coach-title">
+  <div class="mx-auto max-w-[1500px]">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <!-- Portrait -->
+      <div class="relative lg:col-span-6" data-reveal>
+        <SmartImage id="caleb-portrait" sizes="(min-width: 1024px) 45vw, 100vw" class="rounded-[2px]" />
+        <!-- editorial frame mark -->
+        <div class="pointer-events-none absolute -top-3 -left-3 size-16 border-t border-l border-ink/30" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute -right-3 -bottom-3 size-16 border-r border-b border-ink/30" aria-hidden="true"></div>
+      </div>
+
+      <!-- Copy -->
+      <div class="flex flex-col justify-end lg:col-span-6 lg:pl-6" data-reveal>
+        <p class="micro mb-6 text-sage-deep">{coach.eyebrow}</p>
+        <h2 id="coach-title" class="leading-[0.86]">
+          <span class="mind block text-[clamp(3rem,8vw,7.5rem)] text-sage-deep">{coach.name.split(' ')[0]}</span>
+          <span class="muscle block text-[clamp(3.6rem,10vw,9.5rem)]">{coach.name.split(' ').slice(1).join(' ')}</span>
+        </h2>
+        <p class="micro mt-6 text-ink/70">{coach.role}</p>
+
+        <p class="todo mt-8 max-w-[46ch] text-[1.1rem] leading-relaxed">{coach.bio}</p>
+
+        <ul class="mt-10 flex flex-wrap gap-3">
+          {coach.facts.map((f) => (
+            <li class="rounded-full px-4 py-2 text-[0.85rem] shadow-[inset_0_0_0_1px_var(--hairline)]">{f}</li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="mt-[12vh] border-t border-[var(--hairline)] pt-10">
+      <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <h3 class="leading-none">
+          <span class="mind text-[clamp(2rem,4vw,3.4rem)]">{coach.teamTitle}</span>
+        </h3>
+        <p class="max-w-[36ch] text-ink/70">{coach.teamIntro}</p>
+      </div>
+      <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {teamIds.slice(0, coach.teamSlots).map((id, i) => (
+          <li data-reveal style={`--d:${i * 0.15}s`}>
+            <SmartImage id={id} tone={i === 1 ? 'ink' : 'bone'} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw" />
+            <div class="mt-4 flex flex-col items-start gap-2">
+              <p class="micro text-sage-deep">{coach.teamSlotLabel}</p>
+              <p class="todo text-[0.85rem]">{coach.teamSlotTodo}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

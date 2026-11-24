@@ -1,0 +1,164 @@
+---
+/**
+ * SmartImage: the only way images enter the page.
+ *  - Real photo present in src/assets/images/ → AVIF/WebP <picture>, lazy,
+ *    blur-up from a tiny generated preview, fixed aspect ratio (zero CLS).
+ *  - No photo yet → a designed sage/ink placeholder tile that labels the slot.
+ *  - `duotone` (from the shot list) applies the ink + sage treatment.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture, getImage as getOptimized } from 'astro:assets';
+import { getImage, type ImageId } from '../data/images';
+
+interface Props {
+  id: ImageId;
+  class?: string;
+  sizes?: string;
+  /** Above-the-fold images only */
+  priority?: boolean;
+  /** Placeholder tone */
+  tone?: 'sage' | 'ink' | 'bone';
+  /** Override the shot list's aspect ratio, e.g. to fill a fixed box */
+  ratio?: string;
+}
+
+const { id, class: className = '', sizes = '(min-width: 1024px) 50vw, 100vw', priority = false, tone = 'sage', ratio } = Astro.props;
+const slot = getImage(id);
+
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/assets/images/*.{jpg,jpeg,png,webp,avif}', { eager: true });
+const asset = files[`/src/assets/images/${slot.file}`]?.default;
+
+const [rw, rh] = slot.ratio.split(':').map(Number);
+const aspect = ratio ?? `${rw} / ${rh}`;
+
+let blur: string | undefined;
+if (asset) {
+  const tiny = await getOptimized({ src: asset, width: 24, format: 'webp', quality: 40 });
+  blur = tiny.src;
+}
+---
+
+<figure
+  class:list={['smart-image', `tone-${tone}`, { 'is-duotone': slot.duotone, 'is-placeholder': !asset }, className]}
+  style={`aspect-ratio:${aspect};${blur ? `--blur:url(${blur})` : ''}`}
+>
+  {
+    asset ? (
+      <Picture
+        src={asset}
+        alt={slot.alt}
+        formats={['avif', 'webp']}
+        widths={[480, 800, 1200, 1800, 2400].filter((w) => w <= asset.width)}
+        sizes={sizes}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchpriority={priority ? 'high' : 'auto'}
+        class="smart-img"
+        onload="this.closest('figure').classList.add('is-loaded')"
+      />
+    ) : (
+      <div class="ph" role="img" aria-label={`Image placeholder: ${slot.subject}`}>
+        <svg class="ph-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="6" y="6" width="28" height="28" rx="1.5" fill="none" stroke="currentColor" stroke-width="1" />
+          <path d="M6 28l9-9 7 7 4-4 8 8" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" />
+          <circle cx="27" cy="14" r="2.5" fill="none" stroke="currentColor" stroke-width="1" />
+        </svg>
+        <span class="ph-label">
+          <span class="ph-file">TODO: {slot.file}</span>
+          <span class="ph-meta">{slot.ratio} · {slot.subject}</span>
+        </span>
+      </div>
+    )
+  }
+</figure>
+
+<style>
+  .smart-image {
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    background-color: var(--color-bone-dim);
+    background-image: var(--blur, none);
+    background-size: cover;
+    background-position: center;
+    isolation: isolate;
+  }
+  .smart-image :global(.smart-img),
+  .smart-image :global(picture) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .smart-image :global(.smart-img) {
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 1.6s var(--ease-breath);
+  }
+  .smart-image.is-loaded :global(.smart-img) { opacity: 1; }
+
+  /* Duotone: grayscale photo, ink in the shadows, sage in the highlights */
+  .is-duotone:not(.is-placeholder) :global(.smart-img) {
+    filter: grayscale(1) contrast(1.08) brightness(1.02);
+    mix-blend-mode: multiply;
+  }
+  .is-duotone:not(.is-placeholder) {
+    background-color: var(--color-sage);
+  }
+  .is-duotone:not(.is-placeholder)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-ink);
+    mix-blend-mode: lighten;
+    pointer-events: none;
+  }
+
+  /* Placeholder tile */
+  .ph {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(0.9rem, 2.2vw, 1.4rem);
+  }
+  .tone-sage .ph {
+    background:
+      radial-gradient(110% 80% at 12% 100%, color-mix(in oklab, var(--color-bone) 60%, transparent), transparent 65%),
+      linear-gradient(25deg, color-mix(in oklab, var(--color-sage) 75%, var(--color-bone)) 0%, var(--color-sage) 50%, color-mix(in oklab, var(--color-sage) 72%, var(--color-ink)) 100%);
+    color: var(--color-ink);
+  }
+  .tone-ink .ph {
+    background:
+      radial-gradient(110% 80% at 80% 10%, color-mix(in oklab, var(--color-sage) 38%, transparent), transparent 65%),
+      linear-gradient(160deg, var(--color-ink-soft), var(--color-ink));
+    color: var(--color-bone);
+  }
+  .tone-bone .ph {
+    background:
+      radial-gradient(100% 80% at 30% 20%, color-mix(in oklab, var(--color-sage) 30%, transparent), transparent 70%),
+      var(--color-bone-dim);
+    color: var(--color-ink);
+  }
+  .ph-mark {
+    width: 2.25rem;
+    height: 2.25rem;
+    opacity: 0.6;
+  }
+  .ph-label {
+    display: grid;
+    gap: 0.3rem;
+    max-width: 36ch;
+  }
+  .ph-file {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    font-weight: 600;
+  }
+  .ph-meta {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    opacity: 0.85;
+  }
+</style>

@@ -1,0 +1,143 @@
+---
+/**
+ * Footer: click-to-load map (no third-party iframe until asked; protects
+ * performance and privacy), contact details, and a "Breathe." sign-off on the
+ * same 16s clock as the hero.
+ */
+import Icon from './Icon.astro';
+import { business } from '../data/site';
+import { footer } from '../data/sections';
+
+const year = new Date().getFullYear();
+const { address: a } = business;
+---
+
+<footer id="visit" class="footer on-ink relative overflow-hidden bg-ink text-bone" data-hide-sticky aria-labelledby="visit-title">
+  <div class="mx-auto max-w-[1800px] px-5 pt-[14vh] pb-10 md:px-10">
+    <h2 id="visit-title" class="leading-[0.88]">
+      <span class="mind block text-[clamp(2.6rem,6.5vw,6rem)] text-sage">{footer.title.mind}</span>
+      <span class="muscle block text-[clamp(3rem,8vw,7.5rem)]">{footer.title.muscle}</span>
+    </h2>
+
+    <div class="mt-14 grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <!-- Map -->
+      <div class="lg:col-span-7">
+        <div class="map relative aspect-[4/3] overflow-hidden rounded-[1.5rem] sm:aspect-[16/10]" data-map={footer.mapEmbed}>
+          <!-- Designed stand-in: an abstract, breathing locator (not a literal street map) -->
+          <div class="map-art absolute inset-0" aria-hidden="true">
+            <svg viewBox="0 0 400 250" preserveAspectRatio="xMidYMid slice" class="size-full">
+              <defs>
+                <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+                  <path d="M25 0H0V25" fill="none" stroke="rgba(244,241,234,.06)" stroke-width="1" />
+                </pattern>
+              </defs>
+              <rect width="400" height="250" fill="url(#grid)" />
+              <path d="M-10 170C80 150 140 160 210 125S330 70 420 80" fill="none" stroke="rgba(157,180,160,.35)" stroke-width="1" />
+              <path d="M120 -10C140 60 150 140 130 260" fill="none" stroke="rgba(244,241,234,.12)" stroke-width="1" />
+              <path d="M260 -10C250 80 270 160 300 260" fill="none" stroke="rgba(244,241,234,.12)" stroke-width="1" />
+            </svg>
+            <div class="pin-wrap">
+              <span class="pulse breathe" style="--b-min:.6;--b-max:1.4"></span>
+              <span class="pin"></span>
+            </div>
+          </div>
+          <div class="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-3 p-4 md:p-6">
+            <button type="button" class="btn bg-bone text-ink !min-h-11" data-map-load>
+              <Icon name="pin" size={17} />
+              {footer.mapCta}
+              <span class="sr-only">({footer.mapNote})</span>
+            </button>
+            <a href={footer.directionsUrl} class="btn !min-h-11 text-bone shadow-[inset_0_0_0_1px_var(--hairline-light)]" target="_blank" rel="noopener">
+              {footer.directions}
+              <Icon name="arrow" size={17} class="-rotate-45" />
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <dl class="grid content-start gap-8 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1 lg:gap-9">
+        <div>
+          <dt class="micro mb-2 text-sage">{footer.labels.visit}</dt>
+          <dd>
+            <address class="text-[1.15rem] leading-snug not-italic">
+              {a.street}<br />{a.city}, {a.region} {a.postalCode}
+            </address>
+            <p class="mt-1 text-bone/70">On {a.neighborhood}, {a.landmark}</p>
+          </dd>
+        </div>
+        <div>
+          <dt class="micro mb-2 text-sage">{footer.labels.hours}</dt>
+          <dd class="text-[1.15rem]">
+            {business.hours.display}
+            <span class="block text-bone/70">{business.hours.days}</span>
+          </dd>
+        </div>
+        <div>
+          <dt class="micro mb-2 text-sage">{footer.labels.call}</dt>
+          <dd>
+            <a href={business.phone.href} class="link text-[1.15rem]">{business.phone.display}</a>
+          </dd>
+        </div>
+        <div>
+          <dt class="micro mb-2 text-sage">{footer.labels.follow}</dt>
+          <dd>
+            {
+              business.instagram ? (
+                <a href={`https://www.instagram.com/${business.instagram}/`} class="link text-[1.15rem]" target="_blank" rel="noopener">
+                  @{business.instagram}
+                </a>
+              ) : (
+                <span class="todo-dark text-[0.95rem]">{footer.instagramTodo}</span>
+              )
+            }
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Sign-off -->
+    <div class="signoff relative mt-[12vh] grid place-items-center" aria-hidden="true">
+      <span class="signoff-word mind breathe" style="--b-min:.94;--b-max:1.04">{footer.signoff}</span>
+    </div>
+    <p class="sr-only">{footer.signoff}</p>
+
+    <div class="mt-10 flex flex-col gap-3 border-t border-[var(--hairline-light)] pt-6 text-[0.8rem] text-bone/60 sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {business.legalName}</p>
+      <p>{business.positioning}</p>
+      <a href="#top" class="link">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .map { background: radial-gradient(90% 90% at 50% 40%, #1f2622, #0d100e); box-shadow: inset 0 0 0 1px var(--hairline-light); }
+  .map :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: grayscale(0.85) contrast(1.05); }
+  .pin-wrap { position: absolute; left: 50%; top: 46%; translate: -50% -50%; display: grid; place-items: center; }
+  .pulse { grid-area: 1 / 1; width: 7rem; height: 7rem; border-radius: 50%; background: radial-gradient(closest-side, rgba(157, 180, 160, 0.35), transparent); }
+  .pin { grid-area: 1 / 1; width: 0.9rem; height: 0.9rem; border-radius: 50%; background: var(--color-orange); box-shadow: 0 0 0 6px rgba(226, 87, 43, 0.18); }
+  .link { background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat; transition: background-size 0.9s var(--ease-exhale); }
+  .link:hover { background-size: 100% 1px; }
+  .signoff-word {
+    display: block;
+    font-size: clamp(5rem, 22vw, 22rem);
+    line-height: 1;
+    color: var(--color-sage);
+    letter-spacing: -0.04em;
+  }
+</style>
+
+<script>
+  const map = document.querySelector<HTMLElement>('[data-map]');
+  map?.querySelector('[data-map-load]')?.addEventListener('click', (e) => {
+    const iframe = document.createElement('iframe');
+    iframe.src = map.dataset.map!;
+    iframe.title = 'Map: 1044 10th St, Boulder, CO 80302';
+    iframe.loading = 'lazy';
+    iframe.referrerPolicy = 'no-referrer-when-downgrade';
+    map.insertBefore(iframe, map.children[1] ?? null);
+    (e.currentTarget as HTMLElement).remove();
+    iframe.focus();
+  });
+</script>

@@ -1,0 +1,50 @@
+---
+import Icon from './Icon.astro';
+import SmartImage from './SmartImage.astro';
+import { partner } from '../data/sections';
+import { business } from '../data/site';
+---
+
+<section id="partner" class="px-5 py-[8vh] md:px-10" aria-labelledby="partner-title">
+  <article class="partner on-ink relative mx-auto grid max-w-[1500px] overflow-hidden rounded-[2rem] bg-ink text-bone lg:grid-cols-12" data-reveal>
+    <!-- Line art: a brain inside a box breath -->
+    <div class="relative p-8 md:p-12 lg:col-span-7 lg:p-16">
+      <div class="flex items-center gap-4">
+        <svg class="size-11 text-sage" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <rect x="4" y="4" width="40" height="40" rx="3" stroke="currentColor" stroke-width="1.2" />
+          <path d="M17 31c-4 0-6-3-5-6-2-2-1-6 2-7 0-3 3-5 6-4 1-2 5-3 7-1 3-1 6 1 6 4 3 1 4 5 2 7 1 3-1 6-5 6-1 2-4 3-6 1-2 2-6 1-7 0Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+          <path d="M24 13v20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+        </svg>
+        <div>
+          <p class="micro text-sage">{partner.eyebrow}</p>
+          <p class="mt-1 text-[0.95rem] text-bone/70">{partner.descriptor}</p>
+        </div>
+      </div>
+
+      <h2 id="partner-title" class="mt-10 leading-[0.9]">
+        <span class="mind block text-[clamp(2.2rem,5vw,4.6rem)] text-sage">{partner.name}</span>
+        <span class="muscle mt-2 block text-[clamp(2.4rem,5.6vw,5rem)] !leading-[1]">{partner.title.mind} {partner.title.muscle}</span>
+      </h2>
+
+      <p class="mt-6 max-w-[48ch] text-[1.05rem] leading-relaxed text-bone/75">{partner.body}</p>
+
+      <ul class="mt-8 flex flex-wrap gap-2.5">
+        {partner.sessions.map((s) => (
+          <li class="rounded-full px-4 py-2 text-[0.85rem] shadow-[inset_0_0_0_1px_var(--hairline-light)]">{s}</li>
+        ))}
+      </ul>
+
+      <div class="mt-10 flex flex-wrap items-center gap-5">
+        <a href={business.phone.href} class="btn bg-bone text-ink hover:-translate-y-0.5">
+          {partner.cta}
+          <Icon name="arrow" size={18} />
+        </a>
+        {!partner.url && <span class="micro text-[0.62rem] text-orange">TODO: Buff Brain Gym link &amp; logo</span>}
+      </div>
+    </div>
+
+    <div class="relative min-h-[18rem] lg:col-span-5">
+      <SmartImage id="buff-brain-group" tone="ink" ratio="auto" class="!absolute inset-0 h-full w-full" sizes="(min-width: 1024px) 40vw, 100vw" />
+    </div>
+  </article>
+</section>
